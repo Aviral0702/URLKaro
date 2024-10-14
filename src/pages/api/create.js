@@ -9,13 +9,17 @@ const supabase = createClient(
 export default async function handler(req,res) {
     if(req.method=='POST'){
         const {originalUrl} = req.body;
+        console.log(originalUrl)
         const id = nanoid(8);
-        
+        if(!supabase){
+            console.log('account not created');
+        }
         const {data,error} = await supabase
         .from('urls')
         .insert([{id,original_url:originalUrl}])
         .single();
 
+        console.log(data);
         if(error) {
             return res.status(500).json({error: 'Failed to create short URL'});
         } else {
