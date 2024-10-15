@@ -1,32 +1,33 @@
-import { createClient, SupabaseClient } from "@supabase/supabase-js";
-import { nanoid } from "nanoid";
+import { nanoid } from 'nanoid';
+import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_API_KEY
-)
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_SUPABASE_API_KEY);
 
-export default async function handler(req,res) {
-    if(req.method=='POST'){
-        const {originalUrl} = req.body;
-        console.log(originalUrl)
-        const id = nanoid(8);
-        if(!supabase){
-            console.log('account not created');
-        }
-        const {data,error} = await supabase
+export default async function handler(req, res) {
+  if (req.method === 'POST') {
+    try {
+      const { originalUrl } = req.body;
+      if (!originalUrl) {
+        return res.status(400).json({ error: 'Original URL is required' });
+      }
+      const id = nanoid(8);
+
+      const { data, error } = await supabase
         .from('urls')
-        .insert([{id,original_url:originalUrl}])
+        .insert([{ id, original_url: originalUrl }])
+        .select()
         .single();
+      if (error) {
+        return res.status(500).json({ error: 'Failed to create short URL' });
+      }
 
-        console.log(data);
-        if(error) {
-            return res.status(500).json({error: 'Failed to create short URL'});
-        } else {
-            const shortUrl = `${req.headers.host}/${data.id}`;
-            res.status(201).json({shortUrl})
-        }
-    } else {
-        res.status(500).json({error: 'Method not allowed'});
+      const shortUrl = `${req.headers.host}/${data.id}`;
+      res.status(201).json({ shortUrl });
+    } catch (error) {
+      console.error('Unexpected Error:', error);
+      res.status(500).json({ error: 'An unexpected error occurred' });
     }
+  } else {
+    res.status(405).json({ error: 'Method not allowed' });
+  }
 }

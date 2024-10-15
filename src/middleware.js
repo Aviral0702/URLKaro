@@ -2,8 +2,8 @@ import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
 const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_API_KEY
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_SUPABASE_API_KEY 
 )
 
 function getValidUrl(url){
