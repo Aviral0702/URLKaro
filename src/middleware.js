@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_URL 
+    process.env.NEXT_SUPABASE_API_KEY 
 )
 
 function getValidUrl(url){
